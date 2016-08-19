@@ -45,6 +45,9 @@ void printFontMetrics(const QFont& f)
 	qStdOut() << "  (Regular) Average char width: " << fm.averageCharWidth();
 	qStdOut() << " Max char width: " << fm.maxWidth();
 	qStdOut() << " Width(MM): " << fm.width("MM") << endl;
+	qStdOut() << "             ";
+	qStdOut() << "RectWidth(M): " << fm.boundingRect("M").width();
+	qStdOut() << " Bearing: " << fm.leftBearing('M') << "/" << fm.rightBearing('M') << endl;
 
 	// Italic
 	err = (fm_italic.averageCharWidth() != fm_italic.maxWidth() ||
@@ -54,6 +57,9 @@ void printFontMetrics(const QFont& f)
 	qStdOut() << "   (Italic) Average char width: " << fm_italic.averageCharWidth();
 	qStdOut() << " Max char width: " << fm_italic.maxWidth();
 	qStdOut() << " Width(MM): " << fm_italic.width("MM") << endl;
+	qStdOut() << "             ";
+	qStdOut() << "RectWidth(M): " << fm_italic.boundingRect("M").width();
+	qStdOut() << " Bearing: " << fm_italic.leftBearing('M') << "/" << fm_italic.rightBearing('M') << endl;
 
 	// Bold
 	err = (fm_bold.averageCharWidth() != fm_bold.maxWidth() ||
@@ -63,6 +69,9 @@ void printFontMetrics(const QFont& f)
 	qStdOut() << "     (Bold) Average char width: " << fm_bold.averageCharWidth();
 	qStdOut() << " Max char width: " << fm_bold.maxWidth();
 	qStdOut() << " Width(MM): " << fm_bold.width("MM") << endl;
+	qStdOut() << "             ";
+	qStdOut() << "RectWidth(M): " << fm_bold.boundingRect("M").width();
+	qStdOut() << " Bearing: " << fm_bold.leftBearing('M') << "/" << fm_bold.rightBearing('M') << endl;
 
 	// BoldItalic
 	err = (fm_boldit.averageCharWidth() != fm_boldit.maxWidth() ||
@@ -72,6 +81,9 @@ void printFontMetrics(const QFont& f)
 	qStdOut() << "  (Bold+It) Average char width: " << fm_boldit.averageCharWidth();
 	qStdOut() << " Max char width: " << fm_boldit.maxWidth();
 	qStdOut() << " Width(MM): " << fm_boldit.width("MM") << endl;
+	qStdOut() << "             ";
+	qStdOut() << "RectWidth(M): " << fm_boldit.boundingRect("M").width();
+	qStdOut() << " Bearing: " << fm_boldit.leftBearing('M') << "/" << fm_boldit.rightBearing('M') << endl;
 }
 
 void printFontList()
@@ -108,6 +120,11 @@ int main(int argc, char **argv)
 
 	printFontInfo(f);
 	for (int i=10; i<=18; i++) {
+		qStdOut() << "Font size: " << i << endl;
+		f.setPointSize(i);
+		printFontMetrics(f);
+	}
+	for (int i=24; i<=26; i++) {
 		qStdOut() << "Font size: " << i << endl;
 		f.setPointSize(i);
 		printFontMetrics(f);
