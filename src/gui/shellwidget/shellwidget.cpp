@@ -155,17 +155,8 @@ void ShellWidget::paintEvent(QPaintEvent *ev)
 					QPoint pos(r.left(), r.top()+m_ascent+m_lineSpace);
 
 					// Adjust according to font bearing
-					int rBearing = p.fontMetrics().rightBearing(cell.c);
 					int lBearing = p.fontMetrics().leftBearing(cell.c);
-					if (lBearing + rBearing < 0) {
-						// Not much we can do, the font does not
-						// fit the cell
-						qDebug() << p.font() << cell.c << lBearing << rBearing;
-					} else if (lBearing < 0) {
-						pos.setX(pos.x()-lBearing);
-					} else if (rBearing < 0 ) {
-						pos.setX(pos.x()+rBearing);
-					}
+					pos.setX(pos.x()-lBearing);
 					p.drawText(pos, QString(cell.c));
 				}
 
