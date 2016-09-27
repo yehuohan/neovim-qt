@@ -55,11 +55,24 @@ void loadLoginEnvironmen()
 }
 #endif
 
+QCoreApplication* createApplication(int &argc, char **argv)
+{
+#if !defined(Q_OS_WIN) && !defined(Q_OS_MAC)
+	for (int i=0; i<argc; i++) {
+		if (!qstrcmp(argv[i], "--") || !qstrcmp(argv[i], "--spawn")) {
+			break;
+		}
+		if (!qstrcmp(argv[i], "--help") || !qstrcmp(argv[i], "-h")) {
+			return new QCoreApplication(argc, argv);
+		}
+	}
+#endif
+	return new NeovimQt::App(argc, argv);
+}
+
 int main(int argc, char **argv)
 {
-	NeovimQt::App app(argc, argv);
-	app.setApplicationDisplayName("Neovim");
-	app.setWindowIcon(QIcon(":/neovim.png"));
+	QCoreApplication *app = createApplication(argc, argv);
 
 	if (!qgetenv("NVIM_QT_LOG").isEmpty()) {
 		qInstallMessageHandler(logger);
@@ -90,24 +103,24 @@ int main(int argc, char **argv)
 		QCoreApplication::translate("main", "Edit specified file(s)"), "[file...]");
 	parser.addPositionalArgument("...", "Additional arguments are fowarded to Neovim", "[-- ...]");
 
-	int positionalMarker = app.arguments().indexOf("--");
+	int positionalMarker = app->arguments().indexOf("--");
 	QStringList neovimArgs;
 	QStringList spawnArgs;
 	neovimArgs << "--cmd";
 	neovimArgs << "set termguicolors";
 
-	int spawn_idx = app.arguments().indexOf("--spawn");
+	int spawn_idx = app->arguments().indexOf("--spawn");
 	if (spawn_idx != -1 && (spawn_idx < positionalMarker
 				|| positionalMarker == -1)) {
-		QStringList args = app.arguments().mid(0, spawn_idx+1);
-		spawnArgs = app.arguments().mid(spawn_idx+1);
+		QStringList args = app->arguments().mid(0, spawn_idx+1);
+		spawnArgs = app->arguments().mid(spawn_idx+1);
 		parser.process(args);
 	} else if (positionalMarker != -1) {
-		QStringList args = app.arguments().mid(0, positionalMarker);
-		neovimArgs += app.arguments().mid(positionalMarker+1);
+		QStringList args = app->arguments().mid(0, positionalMarker);
+		neovimArgs += app->arguments().mid(positionalMarker+1);
 		parser.process(args);
 	} else {
-		parser.process(app.arguments());
+		parser.process(app->arguments());
 	}
 
 	if (parser.isSet("help")) {
@@ -203,7 +216,7 @@ int main(int argc, char **argv)
 #else
 	NeovimQt::MainWindow *win = new NeovimQt::MainWindow(c);
 
-	QObject::connect(&app, SIGNAL(openFilesTriggered(const QList<QUrl>)),
+	QObject::connect(app, SIGNAL(openFilesTriggered(const QList<QUrl>)),
 		win->shell(), SLOT(openFiles(const QList<QUrl>)));
 
 	if (parser.isSet("fullscreen")) {
@@ -214,6 +227,6 @@ int main(int argc, char **argv)
 		win->delayedShow();
 	}
 #endif
-	return app.exec();
+	return app->exec();
 }
 

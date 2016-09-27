@@ -1,12 +1,15 @@
 #include "app.h"
 
 #include <QFileOpenEvent>
+#include <QIcon>
 
 namespace NeovimQt {
 
 App::App(int &argc, char ** argv)
 :QApplication(argc, argv)
 {
+	setApplicationDisplayName("Neovim");
+	setWindowIcon(QIcon(":/neovim.png"));
 }
 
 bool App::event(QEvent *event)
