@@ -498,6 +498,10 @@ void Shell::handleRedraw(const QByteArray& name, const QVariantList& opargs)
 		handlePopupMenuSelect(opargs.at(0).toLongLong());
 	} else if (name == "popupmenu_hide") {
 		m_pum.hide();
+	} else if (name == "default_colors_set") {
+		// TODO (fg,bg,sp) like in update_fg/bg/sp
+	} else if (name == "mode_info_set") {
+		// TODO: see https://github.com/neovim/neovim/pull/6539
 	} else {
 		qDebug() << "Received unknown redraw notification" << name << opargs;
 	}
@@ -724,12 +728,24 @@ void Shell::handleSetOption(const QString& name, const QVariant& value)
 		// The conversion to string and then to int happens because of http://doc.qt.io/qt-5/qvariant.html#toUInt
 		// toUint() fails to detect an overflow i.e. it converts to ulonglong and then returns a MAX UINT
 		setLineSpace(value.toString().toInt());
+	} else if (name == "arabicshape") {
+		// TODO
+	} else if (name == "ambiwidth") {
+		// TODO
+	} else if (name == "emoji") {
+		// TODO
+	} else if (name == "termguicolors") {
+		// TODO
 	} else if (name == "showtabline") {
 		emit neovimShowtablineSet(value.toString().toInt());
 	} else if (name == "ext_tabline") {
 		emit neovimExtTablineSet(value.toBool());
 	} else if (name == "ext_popupmenu") {
 		emit neovimExtPopupmenuSet(value.toBool());
+	} else if (name == "ext_cmdline") {
+		// TODO
+	} else if (name == "ext_wildmenu") {
+		// TODO
 	} else {
 		qDebug() << "Received unknown option" << name << value;
 	}
