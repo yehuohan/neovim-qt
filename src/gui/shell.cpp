@@ -1046,7 +1046,7 @@ void Shell::closeEvent(QCloseEvent *ev)
 		// and try to close Neovim as :qa
 		ev->ignore();
 		bailoutIfinputBlocking();
-		m_nvim->api0()->vim_command("qa");
+		m_nvim->api0()->vim_command("confirm qa");
 	} else {
 		QWidget::closeEvent(ev);
 	}
