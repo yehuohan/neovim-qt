@@ -79,6 +79,8 @@ void MainWindow::init(NeovimConnector *c)
 			this, &MainWindow::neovimTablineUpdate);
 	connect(m_shell, &Shell::neovimShowtablineSet,
 			this, &MainWindow::neovimShowtablineSet);
+	connect(m_shell, &Shell::neovimBlocked,
+			this, &MainWindow::neovimBlocked);
 	m_shell->setFocus(Qt::OtherFocusReason);
 
 	if (m_nvim->errorCause()) {
@@ -323,6 +325,19 @@ void MainWindow::changeTab(int index)
 
 	int64_t tab = m_tabline->tabData(index).toInt();
 	m_nvim->api2()->nvim_set_current_tabpage(tab);
+}
+
+void MainWindow::neovimBlocked(bool blocked)
+{
+	showIfDelayed();
+	if (blocked) {
+	} else {
+	}
+}
+
+void MainWindow::interruptNeovim()
+{
+	m_nvim->api0()->vim_input("<C-c>");
 }
 } // Namespace
 

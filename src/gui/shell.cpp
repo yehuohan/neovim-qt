@@ -214,7 +214,21 @@ void Shell::init()
 		return;
 	}
 
-	bailoutIfinputBlocking();
+	auto api2 = m_nvim->api2();
+	if (api2) {
+		auto req = api2->nvim_get_mode();
+		// This should never block (async)
+		req->setTimeout(10000);
+		connect(req, &MsgpackRequest::finished, [this, api2](quint32 msgid, quint64 f, const QVariant& r) {
+			auto map = r.toMap();
+			if (map.value("blocking", false) == true) {
+				emit this->neovimBlocked(true);
+				qDebug() << "Neovim seems to be blocked waiting for input";
+			} else {
+				emit this->neovimBlocked(false);
+			}
+		});
+	}
 
 	connect(m_nvim->api0(), &NeovimApi0::neovimNotification,
 			this, &Shell::handleNeovimNotification);

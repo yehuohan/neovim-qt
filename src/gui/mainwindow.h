@@ -48,6 +48,8 @@ private slots:
 	void neovimTablineUpdate(int64_t curtab, QList<Tab> tabs);
 	void extTablineSet(bool);
 	void changeTab(int index);
+	void neovimBlocked(bool);
+	void interruptNeovim();
 private:
 	void init(NeovimConnector *);
         NeovimConnector *m_nvim;

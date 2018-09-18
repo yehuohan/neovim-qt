@@ -73,6 +73,7 @@ signals:
 	/// as seen in Tab::tab.
 	void neovimTablineUpdate(int64_t curtab, QList<Tab> tabs);
 	void neovimShowtablineSet(int);
+	void neovimBlocked(bool);
 
 public slots:
 	void handleNeovimNotification(const QByteArray &name, const QVariantList& args);
