@@ -214,8 +214,6 @@ void Shell::init()
 		return;
 	}
 
-	bailoutIfinputBlocking();
-
 	connect(m_nvim->api0(), &NeovimApi0::neovimNotification,
 			this, &Shell::handleNeovimNotification);
 	connect(m_nvim->api0(), &NeovimApi0::on_ui_try_resize,
@@ -246,6 +244,8 @@ void Shell::init()
 
 	connect(req, &MsgpackRequest::finished,
 			this, &Shell::setAttached);
+
+	bailoutIfinputBlocking();
 
 	// Subscribe to GUI events
 	m_nvim->api0()->vim_subscribe("Gui");
