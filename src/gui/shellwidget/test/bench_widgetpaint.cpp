@@ -17,6 +17,7 @@ private slots:
 			auto path = QDir(QDir(TEST_SOURCE_DIR).filePath("shellcontents"))
 				.filePath("shell2.txt");
 			s = ShellWidget::fromFile(path);
+			QCOMPARE(s->setShellFont("Fira Code", 12, 0, false, false), true);
 			s->show();
 		}
 		void cleanupTestCase() {
