@@ -14,7 +14,10 @@ jobs:
           command: sudo apt-get update
       - run:
           name: Install dependencies
-          command: sudo apt-get install -y neovim python-pip python-dev cmake qt5-default
+          command: sudo apt-get install -y neovim python-pip python-dev cmake qt5-default 
+      - run:
+          name: Install coveralls client
+          command: sudo pip install cpp-coveralls
       - run:
           name: build
           command: |
@@ -27,4 +30,7 @@ jobs:
           command: |
             cd build
             ctest -VV
+      - run:
+          name: Update coveralls
+          command: coveralls -r . -e test -e bindings -e build -e third-party
 
