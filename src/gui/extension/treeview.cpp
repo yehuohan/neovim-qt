@@ -9,12 +9,10 @@
 static const int MAX_COLUMNS_ON_INIT = 10;
 
 namespace NeovimQt {
-TreeView::TreeView(NeovimConnector *nvim, QWidget *parent)
-: QTreeView(parent), m_nvim(nvim) {
+void TreeView::init(NeovimConnector* nvim) {
+    m_nvim = nvim;
 	model = new QFileSystemModel(this);
-
 	setModel(model);
-
 	header()->hide();
 
 	for (int i = 1; i < MAX_COLUMNS_ON_INIT; i++) {

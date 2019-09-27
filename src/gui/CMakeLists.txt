@@ -1,6 +1,6 @@
 set(QTLIBS Qt5::Network Qt5::Widgets)
 
-include_directories(.. shellwidget)
+include_directories(.. shellwidget extension)
 qt5_add_resources(NEOVIM_RCC_SOURCES data.qrc)
 if(WIN32)
 	set(SRCS_PLATFORM
@@ -41,7 +41,8 @@ add_library(neovim-qt-gui
 	popupmenu.cpp
 	popupmenumodel.cpp
 	shell.cpp
-	treeview.cpp
+	extension/plugin_manager.cpp
+	extension/treeview.cpp
 	${SRCS_PLATFORM}
 	${NEOVIM_RCC_SOURCES})
 

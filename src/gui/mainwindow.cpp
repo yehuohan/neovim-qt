@@ -48,6 +48,7 @@ void MainWindow::init(NeovimConnector *c)
 			this, &MainWindow::changeTab);
 
 	m_tabline_bar->addWidget(m_tabline);
+	m_tabline->setVisible(m_shell_options.enable_ext_tabline);
 	m_tabline_bar->setVisible(m_shell_options.enable_ext_tabline);
 
 	// Context menu and actions for right-click
@@ -65,12 +66,13 @@ void MainWindow::init(NeovimConnector *c)
 
 	m_nvim = c;
 
-	m_tree = new TreeView(c);
+	m_pm = new PluginManager(c);
 	m_shell = new Shell(c, m_shell_options);
 
 	m_window = new QSplitter();
-	m_window->addWidget(m_tree);
-	m_tree->hide();
+	m_window->setHandleWidth(0);
+	m_window->addWidget(m_pm);
+	m_pm->hide();
 	m_window->addWidget(m_shell);
 
 	m_stack.insertWidget(1, m_window);
@@ -181,8 +183,8 @@ void MainWindow::neovimWidgetResized()
         if (m_tabline_bar->isVisible()) {
             size.setHeight(size.height() - m_tabline_bar->geometry().size().height());
         }
-		if (m_tree->isVisible()) {
-			size.scale(size.width() - m_tree->geometry().size().width(),
+		if (m_pm->isVisible()) {
+			size.scale(size.width() - m_pm->geometry().size().width(),
 				size.height(), Qt::IgnoreAspectRatio);
 		}
 		m_shell->resizeNeovim(size);

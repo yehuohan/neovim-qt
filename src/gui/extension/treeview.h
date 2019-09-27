@@ -4,14 +4,18 @@
 #include <QFileSystemModel>
 #include <QTreeView>
 #include <QUrl>
+#include "plugin_interface.h"
 #include "neovimconnector.h"
 
 namespace NeovimQt {
 
-class TreeView : public QTreeView {
+class TreeView : public QTreeView, public PluginInterface {
     Q_OBJECT
+
  public:
-	TreeView(NeovimConnector *, QWidget *parent = 0);
+    QWidget* widget() { return this; };
+    void init(NeovimConnector*);
+    void free() {};
 
  public slots:
 	void open(const QModelIndex &);

@@ -31,8 +31,8 @@ public:
 
 class ShellOptions {
 public:
-	bool enable_ext_tabline{ true };
-	bool enable_ext_popupmenu{ true };
+	bool enable_ext_tabline{ false };
+	bool enable_ext_popupmenu{ false };
 	bool enable_ext_linegrid{ false };
 	int nvim_show_tabline{ 1 };
 };
