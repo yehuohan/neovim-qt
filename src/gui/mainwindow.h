@@ -5,7 +5,7 @@
 #include <QStackedWidget>
 #include <QTabBar>
 #include <QSplitter>
-#include "extension/plugin_manager.h"
+#include "plugin_manager.h"
 #include "neovimconnector.h"
 #include "errorwidget.h"
 #include "shell.h"

@@ -183,14 +183,18 @@ endfunction
 "        But what is "the correct UI" ?
 augroup guiDirEvents
     autocmd!
-    autocmd DirChanged * call rpcnotify(0, 'Dir', getcwd())
-    autocmd WinEnter * call rpcnotify(0, 'Dir', getcwd())
+    autocmd DirChanged * call rpcnotify(0,'Plugin', 'Notify', 'TreeView', ['Dir', getcwd()])
+    autocmd WinEnter * call rpcnotify(0, 'Plugin', 'Notify', 'TreeView', ['Dir', getcwd()])
 augroup END
 
 
 " Notifies the TreeView widget of a Show or Hide event
 function! s:TreeViewShowHide(show)
-    call rpcnotify(0, 'Gui', 'TreeView', 'ShowHide', a:show)
+    if a:show
+        call rpcnotify(0, 'Plugin', 'Show','TreeView')
+    else
+        call rpcnotify(0, 'Plugin', 'Hide', 'TreeView')
+    endif
 endfunction
 
 command! GuiTreeviewShow call <SID>TreeViewShowHide(1)

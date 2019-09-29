@@ -1,38 +1,40 @@
 #include "plugin_manager.h"
 
+#include <QApplication>
+#include <QDir>
 #include <QVBoxLayout>
 #include <QGridLayout>
-#include "treeview.h"
+#include <QPluginLoader>
+#include <QJsonObject>
 
 namespace NeovimQt {
 
 PluginManager::PluginManager (NeovimConnector *nvim, QWidget *parent)
 : QStackedWidget(parent), m_nvim(nvim) {
-
     if (m_nvim->isReady()) {
         connector_ready_cb();
     }
     connect(m_nvim, &NeovimConnector::ready, this, &PluginManager ::connector_ready_cb);
 }
 
-PluginInterface* PluginManager::build(const QByteArray& name) {
-    if (name == "TreeView") {
-        return new TreeView();
-    } else if (name == "Debugger") {
-    }
-    return nullptr;
-}
-
-void PluginManager::loadPlugin(const QByteArray& name) {
+void PluginManager::loadPlugin(const QByteArray& name, const QString& filepath) {
     PluginInterface* plug = m_plugs.value(name, nullptr);
     if (!plug) {
-        plug = build(name);
-        if (plug) {
-            plug->init(m_nvim);
-            addWidget(plug->widget());
-            m_plugs.insert(name, plug);
-            setVisible(true);
-            setCurrentWidget(plug->widget());
+        QDir path(qApp->applicationDirPath());
+        path.cd("plugins");
+        QPluginLoader* loader = new QPluginLoader(path.absoluteFilePath(filepath));
+        QObject *obj = loader->instance();
+        if (obj) {
+            QJsonObject json = loader->metaData().value("MetaData").toObject();
+            plug = qobject_cast<PluginInterface *>(obj);
+            if (plug) {
+                m_plugs.insert(name, plug);
+                m_loaders.insert(name, loader);
+                plug->init(m_nvim->neovimObject());
+                addWidget(plug->widget());
+                setCurrentWidget(plug->widget());
+                setVisible(true);
+            }
         }
     }
 }
@@ -44,8 +46,11 @@ void PluginManager::unloadPlugin(const QByteArray& name) {
             setVisible(false);
         }
         removeWidget(plug->widget());
+        QPluginLoader* loader = m_loaders.value(name);
+        plug->free();
+        loader->unload();
         m_plugs.remove(name);
-        delete plug;
+        m_loaders.remove(name);
     }
 }
 
@@ -69,6 +74,13 @@ void PluginManager::hidePlugin(const QByteArray& name) {
     }
 }
 
+void PluginManager::nofityPlugin(const QByteArray& name, const QVariantList& args) {
+    PluginInterface* plug = m_plugs.value(name, nullptr);
+    if (plug) {
+        plug->handleNeovimNotification(args);
+    }
+}
+
 void PluginManager ::connector_ready_cb() {
     connect(m_nvim->neovimObject(), &NeovimApi1::neovimNotification, this,
             &PluginManager::handleNeovimNotification);
@@ -82,17 +94,21 @@ void PluginManager::handleNeovimNotification(const QByteArray &name,
         if (args.size() < 2) {
             return;
         }
-        // ['Plugin', 'Load...', 'PlugName', ...]
+        // [ name, action, pluginname, ... ]
         QByteArray action = args.at(0).toByteArray();
         QByteArray plugname = args.at(1).toByteArray();
         if (action == "Load") {
-            loadPlugin(plugname);
+            QString filepath = args.at(2).toString();
+            loadPlugin(plugname, filepath);
         } else if (action == "Unload") {
             unloadPlugin(plugname);
         } else if (action == "Show") {
             showPlugin(plugname);
         } else if (action == "Hide") {
             hidePlugin(plugname);
+        } else if (action == "Notify") {
+            QVariantList plugargs = args.at(2).toList();
+            nofityPlugin(plugname, plugargs);
         }
     }
 }
