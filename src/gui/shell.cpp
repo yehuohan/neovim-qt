@@ -891,7 +891,7 @@ void Shell::handleExtGuiOption(const QString& name, const QVariant& value)
 void Shell::handleSetOption(const QString& name, const QVariant& value)
 {
 	if (name == "guifont") {
-		setGuiFont(value.toString(), false /*force*/, false /*setOption*/);
+		setGuiFont(value.toString(), true /*force*/, false /*setOption*/);
 	} else if (name == "guifontset") {
 	} else if (name == "guifontwide") {
 		handleGuiFontWide(value);
